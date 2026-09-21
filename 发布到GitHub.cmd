@@ -72,8 +72,11 @@ echo.
 echo ============================================================
 echo 第 3 步：推送到 GitHub（这一步会要求你登录）
 echo ============================================================
-"%GITEXE%" %GITSAFE% push -u origin main
-if errorlevel 1 goto pushfail
+set "PUSHLOG=%TEMP%\mimesis_push.log"
+"%GITEXE%" %GITSAFE% push -u origin main >"%PUSHLOG%" 2>&1
+set "PUSHRC=%ERRORLEVEL%"
+type "%PUSHLOG%"
+if not "%PUSHRC%"=="0" goto pushfail
 
 echo.
 echo ------------------------------------------------------------
@@ -126,11 +129,62 @@ exit /b 1
 :pushfail
 echo.
 echo ------------------------------------------------------------
-echo 推送失败，常见原因：
-echo   1. 仓库还没创建 —— 先打开 https://github.com/new 建一个空仓库
-echo   2. 没登录 GitHub，或登录的账号没有这个仓库的权限
-echo   3. 远程仓库不是空的（建仓库时勾了 Add a README），先拉取再推送
-echo 把上面最后几行提示发给我，我帮你看。
+echo 推送没有成功。上面那段就是 git 的原话。
 echo ------------------------------------------------------------
+findstr /C:"Repository not found" /C:"repository not found" "%PUSHLOG%" >nul 2>&1
+if not errorlevel 1 goto case_notfound
+findstr /C:"Authentication failed" /C:"could not read Username" /C:"Permission denied" /C:"403" "%PUSHLOG%" >nul 2>&1
+if not errorlevel 1 goto case_auth
+findstr /C:"rejected" /C:"non-fast-forward" /C:"fetch first" /C:"remote contains work" /C:"behind" "%PUSHLOG%" >nul 2>&1
+if not errorlevel 1 goto case_notempty
+goto case_other
+
+:case_notempty
+echo 【判断】远程仓库里已经有内容了（多半是建仓库时勾了 Add a README）。
+echo.
+echo   要覆盖远程那几个文件，直接用你本地的 46 个文件吗？
+echo.
+echo     输入 Y 再回车 = 覆盖（远程自动生成的那个 README 会被替换掉）
+echo     直接回车     = 不覆盖，安全退出
+echo       （不覆盖也可以：去 GitHub 把那个仓库删掉，重新建一个空的）
+echo.
+set /p FORCEANS=你的选择: 
+if /i not "%FORCEANS%"=="Y" goto cancel
+echo.
+echo 正在覆盖远程……
+"%GITEXE%" %GITSAFE% push -u --force origin main
+if errorlevel 1 goto case_other
+echo.
+echo ------------------------------------------------------------
+echo 覆盖成功！打开你的 GitHub 仓库页面就能看到了。
+echo ------------------------------------------------------------
+pause
+exit /b 0
+
+:case_notfound
+echo 【判断】GitHub 上找不到这个仓库。
+echo 请用浏览器打开这个地址确认一下：
+echo   https://github.com/fhk-001/mimesis-persona-engine
+echo 如果是 404，说明仓库还没建，或者名字/用户名不一样。
+echo 把正确的地址告诉我，我改一下就行。
+pause
+exit /b 1
+
+:case_auth
+echo 【判断】登录/权限问题：没登录 GitHub，或者登录的账号不是 fhk-001。
+echo 办法：在 Windows 搜索"凭据管理器" - 打开 - Windows 凭据 -
+echo       找到 github.com 那条删掉，然后重新双击本脚本，再登录一次。
+pause
+exit /b 1
+
+:case_other
+echo 【判断】不是上面几种常见情况，需要看一下 git 的原话。
+echo 把窗口里从「第 3 步」到这里的文字全部复制发给我。
+pause
+exit /b 1
+
+:cancel
+echo.
+echo 已取消，远程没有做任何改动。
 pause
 exit /b 1
