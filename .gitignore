@@ -1,0 +1,17 @@
+# ---- 私密数据：绝对不能提交 ----
+config.json
+data/
+work/
+personas/
+*.lnk
+
+# ---- 运行产物与备份 ----
+__pycache__/
+*.pyc
+*.pyo
+*.db
+*.db.bak*
+*.bak
+*.bak-*
+_backup_*/
+*.log

@@ -1,0 +1,92 @@
+{
+  "llm": {
+    "base_url": "https://api.deepseek.com/v1",
+    "api_key": "",
+    "model": "deepseek-chat",
+    "analysis_model": "deepseek-reasoner",
+    "temperature": 1.15,
+    "timeout": 60,
+    "max_retries": 2,
+    "mock": false
+  },
+  "persona": {
+    "dir": "personas/default",
+    "max_chars": 30,
+    "split_long_replies": true,
+    "identity_disclosure": false,
+    "moods": [],
+    "background": "",
+    "time_awareness": true,
+    "stage": "",
+    "night_owl": true,
+    "school": "示例大学",
+    "major": "计算机科学与技术",
+    "grade": "大一",
+    "city": "示例市",
+    "schedule_note": "",
+    "courses": [],
+    "extra_rules": []
+  },
+  "behavior": {
+    "dry_run": true,
+    "min_delay": 1.0,
+    "max_delay": 6.0,
+    "typing_chars_per_second": 6.0,
+    "ignore_probability": 0.08,
+    "cooldown_seconds": 2.0,
+    "max_replies_per_minute": 12,
+    "active_hours": [7, 3],
+    "whitelist": [],
+    "blacklist": [],
+    "groups_enabled": false,
+    "groups_require_at": true,
+    "sensitive_action": "handoff",
+    "sensitive_keywords": [
+      "借钱",
+      "转账",
+      "银行卡",
+      "身份证",
+      "验证码",
+      "密码",
+      "裸聊",
+      "投资",
+      "赌博",
+      "毒品"
+    ]
+  },
+  "memory": {
+    "recent_turns": 18,
+    "long_term": true,
+    "summary": true,
+    "summary_every": 12,
+    "learn_feedback": true,
+    "db": "data/memory.db"
+  },
+  "retrieval": {
+    "enabled": false,
+    "top_k": 2,
+    "max_pairs": 8000
+  },
+  "wechat": {
+    "adapter": "wxauto",
+    "poll_interval": 1.2,
+    "self_names": []
+  },
+  "onebot": {
+    "api_base": "http://127.0.0.1:3000",
+    "access_token": "",
+    "self_id": "",
+    "host": "127.0.0.1",
+    "port": 5700,
+    "path": "/onebot"
+  },
+  "wecom": {
+    "corp_id": "",
+    "agent_id": "",
+    "secret": "",
+    "token": "",
+    "encoding_aes_key": "",
+    "host": "0.0.0.0",
+    "port": 8000
+  }
+}
